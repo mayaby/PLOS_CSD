@@ -4,27 +4,27 @@ This repository contains the code used to analyse critical slowing down (CSD) si
 
 > [Full citation and DOI — to be added upon publication]
 
-The goal is to make the analysis reproducible and adaptable: the core functions can be applied to any timeseries, and the notebooks reproduce all figures and tables in the paper and supplementary materials.
+Note - some of these scripts are not operational, but rather introduce functions/ show examples of the code used. However, all the information needed to reproduce the analysis is contained in these scripts, and many of the figures can be fully reproduced using the files in data/ and the scripts in notebooks/. 
 
 ---
 
 ## Repository Contents
 
-### Analysis scripts
+### Analysis scripts (scripts/)
 
 | File | Purpose |
 |------|---------|
 | `EWS_functions.py` | Core CSD indicator functions: running restoring rate (λ), AR1 autocorrelation, variance, and Fourier surrogate generation |
-| `EWS_wrappers.py` | High-level wrappers — apply these directly to any 1D timeseries |
-| `get_ASSTI.py` | Example showing how the ASSTI fingerprint was extracted from CMIP6 SST data |
+| `EWS_wrappers.py` | High-level wrappers to combine timeseries checks and detrending with CSD indicator calculation |
+| `get_ASSTI.py` | Example showing how the ASSTI fingerprint was extracted from CMIP6 SST data (final values in data/CMIP6_amoc2.nc) |
 | `get_pvalues.py` | Example showing how p-values were computed by comparing observed trends to surrogate distributions |
 
-### Notebooks
+### Notebooks (notebooks/)
 
 | Notebook | Produces |
 |----------|---------|
 | `Main_Plots.ipynb` | Figures 1–6 in the main text |
-| `SI_Plots.ipynb` | All supplementary figures |
+| `SI_Plots.ipynb` | All supplementary figures (S3 Appendix) |
 | `Table_values.ipynb` | Values for tables in S2 and S4 Appendix |
 
 ### Data files (included)
@@ -50,50 +50,17 @@ The pre-computed p-value netCDF files are included for all three window sizes, s
 
 ## Dependencies
 
-```
-pip install numpy scipy statsmodels xarray matplotlib
-```
+`numpy` `scipy` `statsmodels` `xarray` `matplotlib`
 
 Python 3.x. The notebooks also use `jupyterthemes` and `pandas` for formatting.
 
----
-
-## How to Apply the EWS Functions to Your Own Data
-
-Import the wrappers and apply them to any 1D numpy timeseries:
-
-```python
-from EWS_wrappers import lambda_wrapper_rmean, ar1_wrapper_rmean, std_wrapper_rmean
-
-lam = lambda_wrapper_rmean(my_timeseries)  # running restoring rate
-ar1 = ar1_wrapper_rmean(my_timeseries)     # running AR1 autocorrelation
-std = std_wrapper_rmean(my_timeseries)     # running variance
-```
-
-Default parameters are `ws=60` (window size) and `rws=50` (running mean window for detrending). For surrogate timeseries that are already detrended, use the `_ndt` variants (no detrending applied):
-
-```python
-from EWS_wrappers import lambda_wrapper_ndt, ar1_wrapper_ndt, std_wrapper_ndt
-```
-
-To generate Fourier-phase surrogates (the null model used in this paper):
-
-```python
-from EWS_functions import fourrier_surrogates
-
-surrogates = fourrier_surrogates(my_timeseries, ns=1000)  # returns array of shape (ns, len(ts))
-```
-
-The underlying implementations are in `EWS_functions.py`.
-
----
 
 ## Reproducing the Figures
 
 1. Open each notebook and update the path variables in the **DATA PATHS** cell (cell 3 in each notebook):
    - `EWS_DIR`: path to the directory containing the computed EWS arrays (`CMIP6_lambdas_w60_rmean.nc`, etc.)
    - `OBS_DIR` (Main_Plots.ipynb only): path to the ERSSTv5 observational ensemble files
-2. Run the notebooks. The included p-value `.nc` files mean the cells that call `get_pvalues.py` can be skipped.
+2. Run the notebooks.
 3. Notebook order does not matter; each is self-contained.
 
 ---
